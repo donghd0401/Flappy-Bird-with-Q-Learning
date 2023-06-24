@@ -24,8 +24,7 @@ for i in range(600):    # doc du lieu tu file data.txt
             p += 1
 FPS = 60
 
-
-def game_start(generation):
+def game_start(generation, max_score):
     score = 0                  #luu diem
     birdxpos = int(SW / 5)     #toa do x cua chim = 1/5 chieu ngang man hinh
     birdypos = int(SH / 2)      #toa do y cua chim = 1/2 chieu ngang man hinh
@@ -119,12 +118,12 @@ def game_start(generation):
         crashTest = Collision(birdxpos, birdypos, up_pipes, bttm_pipes)
         x_new, y_new = calculate(birdxpos, birdypos, bttm_pipes)
         if crashTest:
-            reward = -1000
+            reward = -1
             Q_update(x_prev, y_prev, jump, reward, x_new, y_new)
+
             return score
 
-        reward = 15
-
+        reward = 1
         Q_update(x_prev, y_prev, jump, reward, x_new, y_new)
 
         WINDOW.blit(IMAGES['background'], (bgx1, 0))
@@ -135,8 +134,10 @@ def game_start(generation):
         WINDOW.blit(IMAGES['base'], (basex1, BASEY))
         WINDOW.blit(IMAGES['base'], (basex2, BASEY))
         text1 = Font.render("Score: " + str(score), True, (255, 255, 255))
+        text3 = Font.render("Max: " + str(max_score), True, (255, 255, 255))
         text2 = Font.render("Episode: " + str(episode), True, (255, 255, 255))
         WINDOW.blit(text1, (SW - 10 - text1.get_width(), 10))
+        WINDOW.blit(text3, (SW - 10 - text3.get_width(), 50))
         WINDOW.blit(text2, (0, 0))
         WINDOW.blit(IMAGES['bird'], (birdxpos, birdypos))
         pygame.display.update()
@@ -207,9 +208,12 @@ if __name__ == "__main__":
     IMAGES['background'] = pygame.image.load('imgs/bg.png').convert()
     IMAGES['bird'] = pygame.image.load('imgs/bird.png').convert_alpha()
     episode = 1
+    max_score = 0
     while True:
-        score = game_start(episode)
+        score = game_start(episode, max_score)
         if score == -1:
             break
         episode += 1
+        if score>max_score:
+            max_score=score
 
